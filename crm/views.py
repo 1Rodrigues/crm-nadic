@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_list_or_404
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from django.db.models import Sum
 from django.urls import reverse_lazy
-from .models import Produto, Venda
+from .models import Produto, Venda, ItemVenda
+from .forms import ItemVendaForm
 # Create your views here.
 
 class ProdutoList(ListView):
@@ -35,4 +36,8 @@ def dashboard_crm(request):
         'vendas_realizadas': Venda.objects.filter(status = 'CONCLUIDA').count(),
     }
     return render(request,'dashboard.html', contexto)
+
+def CriarVenda(request):
+    venda = Venda.objects.create()
+    return redirect()
 
