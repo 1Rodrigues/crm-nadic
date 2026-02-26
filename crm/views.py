@@ -35,3 +35,4 @@ def dashboard_crm(request):
         'vendas_realizadas': Venda.objects.filter(status = 'CONCLUIDA').count(),
     }
     return render(request,'dashboard.html', contexto)
+
