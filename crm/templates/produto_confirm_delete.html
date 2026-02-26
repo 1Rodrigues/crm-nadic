@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h2>Remover Produto</h2>
+    <hr>
+
+    <div class="alert alert-danger">
+        <p>Tem certeza que deseja apagar o produto <strong>{{ object.nome }}</strong>?</p>
+        <p>Esta ação não pode ser desfeita.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sim, quero apagar</button>
+            <a href="{% url 'produto-list' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

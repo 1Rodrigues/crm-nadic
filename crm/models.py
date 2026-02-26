@@ -1,5 +1,6 @@
 from pickletools import read_bytes1
-
+from django.db.models import F
+from django.db import transaction
 from django.db import models
 
 # Create your models here.
@@ -14,6 +15,23 @@ class Produto(models.Model):
 class Venda(models.Model):
     data = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    status = models.CharField(max_length=20, choices=[('PENDENTE', 'pendente'),('CONCLUIDA','concluida')], default = 'PENDENTE')
+
+    def concluir(self):
+        if self.status != 'PENDENTE':
+            return
+        with transaction.atomic():
+            soma_total = 0
+            for item in self.itens.select_related('produto'):
+                if item.produto.estoque < item.quantidade:
+                    raise Exception('Estoque insuficiente')
+                soma_total += (item.quantidade * item.preco_unitario)
+                Produto.objects.filter(id=item.produto.id).update(
+                    estoque=F('estoque') - item.quantidade
+                )
+            self.total = soma_total
+            self.status = 'CONCLUIDA'
+            self.save()
 
     def __str__(self):
         return f'Venda:{self.id}, Valor: {self.total}'
@@ -24,15 +42,6 @@ class ItemVenda(models.Model):
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     quantidade = models.PositiveIntegerField(default=1)
 
-    def save(self, *args, **kwargs):
-        if self.produto.estoque >= self.quantidade:
-            self.produto.estoque -= self.quantidade
-            self.produto.save()
-        else:
-            raise Exception('Estoque insuficiente')
-        self.venda.total += self.preco_unitario * self.quantidade
-        self.venda.save()
-        super().save(*args, **kwargs)
     def __str__(self):
         return f'{self.produto.nome} x {self.quantidade} = {self.preco_unitario * self.quantidade}'
 

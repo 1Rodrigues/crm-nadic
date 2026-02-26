@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block conteudo %}
+    <h2>Visão Geral da Empresa</h2>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Faturamento Total</h5>
+                    <p class="card-text fs-2">R$ {{ faturamento_total|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Quantidade de vendas</h5>
+                    <p class="card-text fs-2">{{ vendas_realizadas }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
