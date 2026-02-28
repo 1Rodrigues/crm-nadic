@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_list_or_404
+from django.shortcuts import get_object_or_404, render, redirect, get_list_or_404
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from django.db.models import Sum
 from django.urls import reverse_lazy
@@ -37,7 +37,34 @@ def dashboard_crm(request):
     }
     return render(request,'dashboard.html', contexto)
 
-def CriarVenda(request):
+def criar_venda(request):
     venda = Venda.objects.create()
-    return redirect()
+    return redirect('detalhe_venda', pk=venda.pk)
+
+def detalhe_venda(request, pk):
+    venda = get_object_or_404(Venda, pk=pk)
+    if request.method == 'POST':
+        form = ItemVendaForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.venda = venda
+            item.preco_unitario = item.produto.preco
+            item.save()
+            return redirect('detalhe_venda',pk)
+    else:
+        form = ItemVendaForm()
+    context = {
+        'venda': venda,
+        'itens': venda.itens.all(),
+        'form': form,
+    }
+    return render(request,'detalhe_venda.html', context)
+
+def concluir_venda(request, pk):
+    venda = get_object_or_404(Venda, pk=pk)
+    try:
+        venda.concluir()
+        return redirect('dashboard')
+    except Exception as e :
+        return render(request, 'erro.html', {'mensagem': str(e)})
 

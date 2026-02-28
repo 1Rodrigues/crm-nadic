@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1>Caixa - Venda #{{ venda.id }}</h1>
+    <span class="badge bg-warning text-dark">{{ venda.status }}</span>
+    <hr>
+
+    <div class="card mb-4">
+        <div class="card-header">Itens no Carrinho</div>
+        <ul class="list-group list-group-flush">
+            {% for item in itens %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ item.produto.nome }} (x{{ item.quantidade }})</span>
+                    <strong>R$ {{ item.preco_unitario }}</strong>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted">Nenhum item adicionado ainda.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% if venda.status == 'PENDENTE' %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h4>Adicionar Produto</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Adicionar ao Carrinho</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-6 text-end">
+                <h3>Total Estimado: R$ {{ venda.total }}</h3> <a href="{% url 'finalizar_venda' venda.pk %}" class="btn btn-success btn-lg">
+                    ✅ Finalizar Venda
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-success">Venda Concluída!</div>
+    {% endif %}
+
+{% endblock %}

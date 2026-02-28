@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from crm.views import (
-    ProdutoList, ProdutoCreate, ProdutoUpdate, ProdutoDelete, dashboard_crm
+    ProdutoList, ProdutoCreate, ProdutoUpdate, ProdutoDelete, dashboard_crm, criar_venda, concluir_venda, detalhe_venda
 )
 
 
@@ -28,4 +28,8 @@ urlpatterns = [
     path('produtos/novo/', ProdutoCreate.as_view(), name='produto-create'),
     path('produtos/editar/<int:pk>/', ProdutoUpdate.as_view(), name='produto-update'),
     path('produtos/remover/<int:pk>/', ProdutoDelete.as_view(), name='produto-delete'),
+    path('venda/nova/', criar_venda, name='criar_venda'),
+    path('venda/<int:pk>/', detalhe_venda, name='detalhe_venda'),
+    path('venda/<int:pk>/finalizar/', concluir_venda, name='finalizar_venda'),
 ]
+
