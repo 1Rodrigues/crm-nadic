@@ -25,14 +25,17 @@ class Venda(models.Model):
             for item in self.itens.select_related('produto'):
                 if item.produto.estoque < item.quantidade:
                     raise Exception('Estoque insuficiente')
-                soma_total += (item.quantidade * item.preco_unitario)
                 Produto.objects.filter(id=item.produto.id).update(
                     estoque=F('estoque') - item.quantidade
                 )
             self.total = soma_total
             self.status = 'CONCLUIDA'
             self.save()
-
+    def calcular_valor(self):
+        total = 0
+        for item in self.itens.all():
+            total += item.preco_unitario * item.quantidade
+        return total
     def __str__(self):
         return f'Venda:{self.id}, Valor: {self.total}'
 

@@ -68,3 +68,8 @@ def concluir_venda(request, pk):
     except Exception as e :
         return render(request, 'erro.html', {'mensagem': str(e)})
 
+def remover_item(request, pk):
+    item = get_object_or_404(pk)
+    ItemVenda.objects.delete(id=pk)
+    
+
